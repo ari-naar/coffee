@@ -33,14 +33,12 @@ class _AuthScreenState extends State<AuthScreen> {
 
     try {
       if (_isLogin) {
-        await Provider.of<AuthProvider>(context, listen: false)
-            .signInWithEmailAndPassword(
+        await Provider.of<AuthProvider>(context, listen: false).signInWithEmail(
           _emailController.text,
           _passwordController.text,
         );
       } else {
-        await Provider.of<AuthProvider>(context, listen: false)
-            .signUpWithEmailAndPassword(
+        await Provider.of<AuthProvider>(context, listen: false).signUpWithEmail(
           _emailController.text,
           _passwordController.text,
         );

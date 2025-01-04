@@ -25,7 +25,7 @@ Authentication
 ✅ Firebase Authentication integration
 ✅ Auth provider implementation
 ✅ Email/password authentication
-✅ Apple Sign In (iOS only)
+✅ Apple Sign In (with user existence check)
 ⬜️ Password reset functionality
 ⬜️ Email verification
 
@@ -98,9 +98,9 @@ Legend:
 ⬜️ Not Started
 
 Next Steps:
-1. Complete authentication implementation
-2. Implement coffee shop details screen
-3. Add coffee shop creation/editing functionality
-4. Implement map integration
-5. Add user profile management
-6. Set up testing infrastructure
+1. Implement password reset functionality
+2. Add email verification
+3. Implement coffee shop details screen
+4. Add coffee shop creation/editing functionality
+5. Implement map integration
+6. Add user profile management 
