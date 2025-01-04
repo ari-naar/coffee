@@ -13,15 +13,7 @@ void main() async {
   await dotenv.load(fileName: '.env');
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
-      appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
-      messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
-      projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
-      storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? '',
-    ),
-  );
+  await Firebase.initializeApp();
 
   // Initialize services
   await serviceLocator.initialize();
