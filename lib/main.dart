@@ -1,125 +1,294 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'services/service_locator.dart';
+import 'themes/app_colors.dart';
+import 'themes/app_typography.dart';
+import 'themes/app_sizing.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
+      appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
+      messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
+      projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
+      storageBucket: dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? '',
+    ),
+  );
+
+  // Initialize services
+  await serviceLocator.initialize();
+
+  runApp(const CoffeeTrackApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CoffeeTrackApp extends StatelessWidget {
+  const CoffeeTrackApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: serviceLocator.theme.themeMode,
+      builder: (context, themeMode, child) {
+        return ValueListenableBuilder<double>(
+          valueListenable: serviceLocator.theme.fontSizeScale,
+          builder: (context, fontSizeScale, child) {
+            return MaterialApp(
+              title: 'CoffeeTrack',
+              themeMode: themeMode,
+              theme: _buildLightTheme(fontSizeScale),
+              darkTheme: _buildDarkTheme(fontSizeScale),
+              debugShowCheckedModeBanner: false,
+              home: const Scaffold(
+                body: Center(
+                  child: Text('Welcome to CoffeeTrack'),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+  ThemeData _buildLightTheme(double fontSizeScale) {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        primary: AppColors.primary,
+        secondary: AppColors.secondary,
+        background: AppColors.background,
+        surface: AppColors.surface,
+        error: AppColors.error,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      textTheme: TextTheme(
+        displayLarge:
+            AppTypography.displayLarge.apply(fontSizeFactor: fontSizeScale),
+        displayMedium:
+            AppTypography.displayMedium.apply(fontSizeFactor: fontSizeScale),
+        displaySmall:
+            AppTypography.displaySmall.apply(fontSizeFactor: fontSizeScale),
+        headlineLarge:
+            AppTypography.headlineLarge.apply(fontSizeFactor: fontSizeScale),
+        headlineMedium:
+            AppTypography.headlineMedium.apply(fontSizeFactor: fontSizeScale),
+        headlineSmall:
+            AppTypography.headlineSmall.apply(fontSizeFactor: fontSizeScale),
+        titleLarge:
+            AppTypography.titleLarge.apply(fontSizeFactor: fontSizeScale),
+        titleMedium:
+            AppTypography.titleMedium.apply(fontSizeFactor: fontSizeScale),
+        titleSmall:
+            AppTypography.titleSmall.apply(fontSizeFactor: fontSizeScale),
+        bodyLarge: AppTypography.bodyLarge.apply(fontSizeFactor: fontSizeScale),
+        bodyMedium:
+            AppTypography.bodyMedium.apply(fontSizeFactor: fontSizeScale),
+        bodySmall: AppTypography.bodySmall.apply(fontSizeFactor: fontSizeScale),
+        labelLarge:
+            AppTypography.labelLarge.apply(fontSizeFactor: fontSizeScale),
+        labelMedium:
+            AppTypography.labelMedium.apply(fontSizeFactor: fontSizeScale),
+        labelSmall:
+            AppTypography.labelSmall.apply(fontSizeFactor: fontSizeScale),
+      ),
+      scaffoldBackgroundColor: AppColors.background,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.onSurface,
+        elevation: 0,
+      ),
+      cardTheme: CardTheme(
+        color: AppColors.surface,
+        elevation: 2,
+        margin: EdgeInsets.all(AppSizing.medium),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.primary),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.error),
+        ),
+        contentPadding: EdgeInsets.all(AppSizing.medium),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSizing.large,
+            vertical: AppSizing.medium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizing.small),
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSizing.medium,
+            vertical: AppSizing.small,
+          ),
+        ),
+      ),
+      iconTheme: IconThemeData(
+        color: AppColors.onSurface,
+        size: AppSizing.iconMedium,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.surface,
+        labelStyle: AppTypography.labelMedium,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSizing.medium,
+          vertical: AppSizing.small,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          side: BorderSide(color: AppColors.border),
+        ),
+      ),
+    );
+  }
+
+  ThemeData _buildDarkTheme(double fontSizeScale) {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        primary: AppColors.primary,
+        secondary: AppColors.secondary,
+        background: AppColors.backgroundDark,
+        surface: AppColors.surfaceDark,
+        error: AppColors.error,
+        brightness: Brightness.dark,
+      ),
+      textTheme: TextTheme(
+        displayLarge:
+            AppTypography.displayLarge.apply(fontSizeFactor: fontSizeScale),
+        displayMedium:
+            AppTypography.displayMedium.apply(fontSizeFactor: fontSizeScale),
+        displaySmall:
+            AppTypography.displaySmall.apply(fontSizeFactor: fontSizeScale),
+        headlineLarge:
+            AppTypography.headlineLarge.apply(fontSizeFactor: fontSizeScale),
+        headlineMedium:
+            AppTypography.headlineMedium.apply(fontSizeFactor: fontSizeScale),
+        headlineSmall:
+            AppTypography.headlineSmall.apply(fontSizeFactor: fontSizeScale),
+        titleLarge:
+            AppTypography.titleLarge.apply(fontSizeFactor: fontSizeScale),
+        titleMedium:
+            AppTypography.titleMedium.apply(fontSizeFactor: fontSizeScale),
+        titleSmall:
+            AppTypography.titleSmall.apply(fontSizeFactor: fontSizeScale),
+        bodyLarge: AppTypography.bodyLarge.apply(fontSizeFactor: fontSizeScale),
+        bodyMedium:
+            AppTypography.bodyMedium.apply(fontSizeFactor: fontSizeScale),
+        bodySmall: AppTypography.bodySmall.apply(fontSizeFactor: fontSizeScale),
+        labelLarge:
+            AppTypography.labelLarge.apply(fontSizeFactor: fontSizeScale),
+        labelMedium:
+            AppTypography.labelMedium.apply(fontSizeFactor: fontSizeScale),
+        labelSmall:
+            AppTypography.labelSmall.apply(fontSizeFactor: fontSizeScale),
+      ).apply(
+        bodyColor: AppColors.onSurfaceDark,
+        displayColor: AppColors.onSurfaceDark,
+      ),
+      scaffoldBackgroundColor: AppColors.backgroundDark,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.surfaceDark,
+        foregroundColor: AppColors.onSurfaceDark,
+        elevation: 0,
+      ),
+      cardTheme: CardTheme(
+        color: AppColors.surfaceDark,
+        elevation: 2,
+        margin: EdgeInsets.all(AppSizing.medium),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceDark,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.borderDark),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.borderDark),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.primary),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          borderSide: BorderSide(color: AppColors.error),
+        ),
+        contentPadding: EdgeInsets.all(AppSizing.medium),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSizing.large,
+            vertical: AppSizing.medium,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizing.small),
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSizing.medium,
+            vertical: AppSizing.small,
+          ),
+        ),
+      ),
+      iconTheme: IconThemeData(
+        color: AppColors.onSurfaceDark,
+        size: AppSizing.iconMedium,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        labelStyle: AppTypography.labelMedium.copyWith(
+          color: AppColors.onSurfaceDark,
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSizing.medium,
+          vertical: AppSizing.small,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizing.small),
+          side: BorderSide(color: AppColors.borderDark),
+        ),
+      ),
     );
   }
 }
