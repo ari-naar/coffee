@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 class AppTypography {
-  static const String fontFamily = 'Poppins';
+  // static const String fontFamily = 'Poppins';
+  static const String fontFamily = '';
 
   // Display styles
   static const TextStyle displayLarge = TextStyle(

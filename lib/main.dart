@@ -1,3 +1,4 @@
+import 'package:coffee_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,11 +37,7 @@ class CoffeeTrackApp extends StatelessWidget {
               theme: AppTheme.lightTheme(fontSizeScale),
               darkTheme: AppTheme.darkTheme(fontSizeScale),
               debugShowCheckedModeBanner: false,
-              home: const Scaffold(
-                body: Center(
-                  child: Text('Welcome to CoffeeTrack'),
-                ),
-              ),
+              home: const HomeScreen(),
             );
           },
         );

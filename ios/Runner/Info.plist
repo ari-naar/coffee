@@ -26,6 +26,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>CoffeeTrack needs access to location to find coffee shops near you and save the locations of your coffee experiences.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>CoffeeTrack needs access to location to find coffee shops near you and save the locations of your coffee experiences even when the app is in background.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>CoffeeTrack needs access to location to find coffee shops near you and save the locations of your coffee experiences.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
