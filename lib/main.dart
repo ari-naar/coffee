@@ -1,9 +1,12 @@
-import 'package:coffee_app/screens/home_screen.dart';
+import 'package:coffee_app/screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'services/service_locator.dart';
 import 'themes/app_theme.dart';
+import 'providers/coffee_shops_provider.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,23 +28,30 @@ class CoffeeTrackApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: serviceLocator.theme.themeMode,
-      builder: (context, themeMode, child) {
-        return ValueListenableBuilder<double>(
-          valueListenable: serviceLocator.theme.fontSizeScale,
-          builder: (context, fontSizeScale, child) {
-            return MaterialApp(
-              title: 'CoffeeTrack',
-              themeMode: themeMode,
-              theme: AppTheme.lightTheme(fontSizeScale),
-              darkTheme: AppTheme.darkTheme(fontSizeScale),
-              debugShowCheckedModeBanner: false,
-              home: const HomeScreen(),
-            );
-          },
-        );
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => CoffeeShopsProvider(),
+        ),
+      ],
+      child: ValueListenableBuilder<ThemeMode>(
+        valueListenable: serviceLocator.theme.themeMode,
+        builder: (context, themeMode, child) {
+          return ValueListenableBuilder<double>(
+            valueListenable: serviceLocator.theme.fontSizeScale,
+            builder: (context, fontSizeScale, child) {
+              return MaterialApp(
+                title: 'CoffeeTrack',
+                themeMode: themeMode,
+                theme: AppTheme.lightTheme(fontSizeScale),
+                darkTheme: AppTheme.darkTheme(fontSizeScale),
+                debugShowCheckedModeBanner: false,
+                home: const AuthScreen(),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
