@@ -4,7 +4,7 @@ import 'app_typography.dart';
 import 'app_sizing.dart';
 
 class AppTheme {
-  static ThemeData get lightTheme {
+  static ThemeData lightTheme(double fontSizeScale) {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
@@ -20,22 +20,35 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.background,
       fontFamily: AppTypography.fontFamily,
-      textTheme: const TextTheme(
-        displayLarge: AppTypography.displayLarge,
-        displayMedium: AppTypography.displayMedium,
-        displaySmall: AppTypography.displaySmall,
-        headlineLarge: AppTypography.headlineLarge,
-        headlineMedium: AppTypography.headlineMedium,
-        headlineSmall: AppTypography.headlineSmall,
-        titleLarge: AppTypography.titleLarge,
-        titleMedium: AppTypography.titleMedium,
-        titleSmall: AppTypography.titleSmall,
-        bodyLarge: AppTypography.bodyLarge,
-        bodyMedium: AppTypography.bodyMedium,
-        bodySmall: AppTypography.bodySmall,
-        labelLarge: AppTypography.labelLarge,
-        labelMedium: AppTypography.labelMedium,
-        labelSmall: AppTypography.labelSmall,
+      textTheme: TextTheme(
+        displayLarge:
+            AppTypography.displayLarge.apply(fontSizeFactor: fontSizeScale),
+        displayMedium:
+            AppTypography.displayMedium.apply(fontSizeFactor: fontSizeScale),
+        displaySmall:
+            AppTypography.displaySmall.apply(fontSizeFactor: fontSizeScale),
+        headlineLarge:
+            AppTypography.headlineLarge.apply(fontSizeFactor: fontSizeScale),
+        headlineMedium:
+            AppTypography.headlineMedium.apply(fontSizeFactor: fontSizeScale),
+        headlineSmall:
+            AppTypography.headlineSmall.apply(fontSizeFactor: fontSizeScale),
+        titleLarge:
+            AppTypography.titleLarge.apply(fontSizeFactor: fontSizeScale),
+        titleMedium:
+            AppTypography.titleMedium.apply(fontSizeFactor: fontSizeScale),
+        titleSmall:
+            AppTypography.titleSmall.apply(fontSizeFactor: fontSizeScale),
+        bodyLarge: AppTypography.bodyLarge.apply(fontSizeFactor: fontSizeScale),
+        bodyMedium:
+            AppTypography.bodyMedium.apply(fontSizeFactor: fontSizeScale),
+        bodySmall: AppTypography.bodySmall.apply(fontSizeFactor: fontSizeScale),
+        labelLarge:
+            AppTypography.labelLarge.apply(fontSizeFactor: fontSizeScale),
+        labelMedium:
+            AppTypography.labelMedium.apply(fontSizeFactor: fontSizeScale),
+        labelSmall:
+            AppTypography.labelSmall.apply(fontSizeFactor: fontSizeScale),
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.border,
@@ -52,7 +65,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
-          textStyle: AppTypography.labelLarge,
+          textStyle:
+              AppTypography.labelLarge.apply(fontSizeFactor: fontSizeScale),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSizing.large,
             vertical: AppSizing.medium,
@@ -90,7 +104,7 @@ class AppTheme {
     );
   }
 
-  static ThemeData get darkTheme {
+  static ThemeData darkTheme(double fontSizeScale) {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -106,22 +120,35 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.backgroundDark,
       fontFamily: AppTypography.fontFamily,
-      textTheme: const TextTheme(
-        displayLarge: AppTypography.displayLarge,
-        displayMedium: AppTypography.displayMedium,
-        displaySmall: AppTypography.displaySmall,
-        headlineLarge: AppTypography.headlineLarge,
-        headlineMedium: AppTypography.headlineMedium,
-        headlineSmall: AppTypography.headlineSmall,
-        titleLarge: AppTypography.titleLarge,
-        titleMedium: AppTypography.titleMedium,
-        titleSmall: AppTypography.titleSmall,
-        bodyLarge: AppTypography.bodyLarge,
-        bodyMedium: AppTypography.bodyMedium,
-        bodySmall: AppTypography.bodySmall,
-        labelLarge: AppTypography.labelLarge,
-        labelMedium: AppTypography.labelMedium,
-        labelSmall: AppTypography.labelSmall,
+      textTheme: TextTheme(
+        displayLarge:
+            AppTypography.displayLarge.apply(fontSizeFactor: fontSizeScale),
+        displayMedium:
+            AppTypography.displayMedium.apply(fontSizeFactor: fontSizeScale),
+        displaySmall:
+            AppTypography.displaySmall.apply(fontSizeFactor: fontSizeScale),
+        headlineLarge:
+            AppTypography.headlineLarge.apply(fontSizeFactor: fontSizeScale),
+        headlineMedium:
+            AppTypography.headlineMedium.apply(fontSizeFactor: fontSizeScale),
+        headlineSmall:
+            AppTypography.headlineSmall.apply(fontSizeFactor: fontSizeScale),
+        titleLarge:
+            AppTypography.titleLarge.apply(fontSizeFactor: fontSizeScale),
+        titleMedium:
+            AppTypography.titleMedium.apply(fontSizeFactor: fontSizeScale),
+        titleSmall:
+            AppTypography.titleSmall.apply(fontSizeFactor: fontSizeScale),
+        bodyLarge: AppTypography.bodyLarge.apply(fontSizeFactor: fontSizeScale),
+        bodyMedium:
+            AppTypography.bodyMedium.apply(fontSizeFactor: fontSizeScale),
+        bodySmall: AppTypography.bodySmall.apply(fontSizeFactor: fontSizeScale),
+        labelLarge:
+            AppTypography.labelLarge.apply(fontSizeFactor: fontSizeScale),
+        labelMedium:
+            AppTypography.labelMedium.apply(fontSizeFactor: fontSizeScale),
+        labelSmall:
+            AppTypography.labelSmall.apply(fontSizeFactor: fontSizeScale),
       ).apply(
         bodyColor: AppColors.onSurfaceDark,
         displayColor: AppColors.onSurfaceDark,
@@ -141,7 +168,8 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
-          textStyle: AppTypography.labelLarge,
+          textStyle:
+              AppTypography.labelLarge.apply(fontSizeFactor: fontSizeScale),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSizing.large,
             vertical: AppSizing.medium,
