@@ -8,7 +8,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surface,
@@ -22,7 +22,7 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.background,
       fontFamily: AppTypography.fontFamily,
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         displayLarge: AppTypography.displayLarge,
         displayMedium: AppTypography.displayMedium,
         displaySmall: AppTypography.displaySmall,
@@ -39,7 +39,7 @@ class AppTheme {
         labelMedium: AppTypography.labelMedium,
         labelSmall: AppTypography.labelSmall,
       ),
-      dividerTheme: DividerThemeData(
+      dividerTheme: const DividerThemeData(
         color: AppColors.border,
         thickness: AppSizing.borderThin,
       ),
@@ -55,7 +55,7 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
           textStyle: AppTypography.labelLarge,
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: AppSizing.large,
             vertical: AppSizing.medium,
           ),
@@ -69,22 +69,22 @@ class AppTheme {
         fillColor: AppColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
               color: AppColors.primary, width: AppSizing.borderMedium),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(color: AppColors.error),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
-        contentPadding: EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSizing.medium,
           vertical: AppSizing.small,
         ),
@@ -96,21 +96,19 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surfaceDark,
-        background: AppColors.backgroundDark,
         error: AppColors.errorDark,
         onPrimary: AppColors.onPrimary,
         onSecondary: AppColors.onSecondary,
         onSurface: AppColors.onSurfaceDark,
-        onBackground: AppColors.onBackgroundDark,
         onError: AppColors.onErrorDark,
       ),
       scaffoldBackgroundColor: AppColors.backgroundDark,
       fontFamily: AppTypography.fontFamily,
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         displayLarge: AppTypography.displayLarge,
         displayMedium: AppTypography.displayMedium,
         displaySmall: AppTypography.displaySmall,
@@ -130,7 +128,7 @@ class AppTheme {
         bodyColor: AppColors.onSurfaceDark,
         displayColor: AppColors.onSurfaceDark,
       ),
-      dividerTheme: DividerThemeData(
+      dividerTheme: const DividerThemeData(
         color: AppColors.borderDark,
         thickness: AppSizing.borderThin,
       ),
@@ -146,7 +144,7 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
           textStyle: AppTypography.labelLarge,
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: AppSizing.large,
             vertical: AppSizing.medium,
           ),
@@ -160,22 +158,22 @@ class AppTheme {
         fillColor: AppColors.surfaceDark,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(color: AppColors.borderDark),
+          borderSide: const BorderSide(color: AppColors.borderDark),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(color: AppColors.borderDark),
+          borderSide: const BorderSide(color: AppColors.borderDark),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
               color: AppColors.primary, width: AppSizing.borderMedium),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizing.radiusSmall),
-          borderSide: BorderSide(color: AppColors.errorDark),
+          borderSide: const BorderSide(color: AppColors.errorDark),
         ),
-        contentPadding: EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSizing.medium,
           vertical: AppSizing.small,
         ),
