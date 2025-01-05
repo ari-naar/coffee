@@ -1,7 +1,6 @@
+import 'package:coffee_app/widgets/custom_modal.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/coffee_shops_provider.dart';
-import '../models/coffee_shop.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,91 +11,52 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    super.initState();
-    // Fetch coffee shops when the screen loads
-    Future.microtask(
-        () => context.read<CoffeeShopsProvider>().fetchCoffeeShops());
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CoffeeTrack'),
-      ),
-      body: Consumer<CoffeeShopsProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (provider.error != null) {
-            return Center(
-              child: Text(
-                'Error: ${provider.error}',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+      backgroundColor: Colors.green.shade100,
+      body: Stack(
+        children: [
+          // Centered "map" text
+          const Center(
+            child: Text(
+              'map',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.grey,
               ),
-            );
-          }
-
-          if (provider.shops.isEmpty) {
-            return Center(
-              child: Text(
-                'No coffee shops found',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: provider.shops.length,
-            itemBuilder: (context, index) {
-              final shop = provider.shops[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: ListTile(
-                  leading: shop.imageUrl != null
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(shop.imageUrl!),
-                        )
-                      : const CircleAvatar(
-                          child: Icon(Icons.coffee),
-                        ),
-                  title: Text(shop.name),
-                  subtitle: Text(shop.address),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(
-                        shop.rating.toStringAsFixed(1),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
+            ),
+          ),
+          // Heart icon button
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8.h,
+            right: 16.w,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  onTap: () {
-                    // TODO: Navigate to coffee shop details
-                  },
+                ],
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.favorite_border,
+                  size: 20.sp,
+                  color: Colors.grey[600],
                 ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Navigate to add coffee shop screen
-        },
-        child: const Icon(Icons.add),
+                onPressed: () {
+                  // Handle favorites
+                },
+              ),
+            ),
+          ),
+          // Persistent bottom sheet
+          const CustomModal(),
+        ],
       ),
     );
   }
