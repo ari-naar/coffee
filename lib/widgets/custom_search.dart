@@ -14,11 +14,14 @@ class CustomSearch extends StatefulWidget {
 class _CustomSearchState extends State<CustomSearch> {
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      focusNode: widget.searchFocusNode,
-      decoration: InputDecoration(
-        hintText: 'Search',
-        prefixIcon: Icon(HugeIcons.strokeRoundedSearch01),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+      child: TextField(
+        focusNode: widget.searchFocusNode,
+        decoration: InputDecoration(
+          hintText: 'Search',
+          prefixIcon: Icon(HugeIcons.strokeRoundedSearch01),
+        ),
       ),
     );
   }

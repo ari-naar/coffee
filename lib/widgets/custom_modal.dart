@@ -1,4 +1,5 @@
 import 'package:coffee_app/screens/modals_screens/search_modal.dart';
+import 'package:coffee_app/widgets/custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,21 +12,48 @@ class CustomModal extends StatefulWidget {
 
 class _CustomModalState extends State<CustomModal> {
   DraggableScrollableController? _controller;
+  double _currentSize = 0.1;
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _controller = DraggableScrollableController();
+    _controller?.addListener(_onSheetPositionChanged);
+    _searchFocusNode.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
+    _controller?.removeListener(_onSheetPositionChanged);
     _controller?.dispose();
+    _searchFocusNode.removeListener(_onFocusChange);
+    _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_searchFocusNode.hasFocus) {
+      _controller?.animateTo(
+        0.5,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _onSheetPositionChanged() {
+    if (_controller != null) {
+      setState(() {
+        _currentSize = _controller!.size;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final contentOpacity = ((_currentSize - 0.1) / (0.5 - 0.1)).clamp(0.0, 1.0);
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -76,11 +104,20 @@ class _CustomModalState extends State<CustomModal> {
                           height: 5.h,
                         ),
                       ),
+                      CustomSearch(searchFocusNode: _searchFocusNode),
                       Expanded(
-                        child: SingleChildScrollView(
-                          controller: scrollController,
-                          child: SearchModal(
-                            modalController: _controller,
+                        child: AnimatedOpacity(
+                          opacity: contentOpacity,
+                          duration: const Duration(milliseconds: 100),
+                          child: IgnorePointer(
+                            ignoring: contentOpacity < 0.1,
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              child: SearchModal(
+                                modalController: _controller,
+                                searchFocusNode: _searchFocusNode,
+                              ),
+                            ),
                           ),
                         ),
                       ),

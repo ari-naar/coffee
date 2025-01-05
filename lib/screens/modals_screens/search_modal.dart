@@ -7,10 +7,12 @@ import 'package:hugeicons/hugeicons.dart';
 
 class SearchModal extends StatefulWidget {
   final DraggableScrollableController? modalController;
+  final FocusNode searchFocusNode;
 
   const SearchModal({
     super.key,
     this.modalController,
+    required this.searchFocusNode,
   });
 
   @override
@@ -19,8 +21,6 @@ class SearchModal extends StatefulWidget {
 
 class _SearchModalState extends State<SearchModal> {
   Map<String, List<ChipOption>> selectedChipOptions = {};
-  final FocusNode _searchFocusNode = FocusNode();
-  bool _isExpanded = false;
 
   final Map<String, List<ChipOption>> cafeFilterOptions = {
     'Distance': [
@@ -52,30 +52,6 @@ class _SearchModalState extends State<SearchModal> {
   };
 
   @override
-  void initState() {
-    super.initState();
-    _searchFocusNode.addListener(_onFocusChange);
-  }
-
-  @override
-  void dispose() {
-    _searchFocusNode.removeListener(_onFocusChange);
-    _searchFocusNode.dispose();
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    if (_searchFocusNode.hasFocus && !_isExpanded) {
-      _isExpanded = true;
-      widget.modalController?.animateTo(
-        0.5,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
@@ -85,8 +61,6 @@ class _SearchModalState extends State<SearchModal> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomSearch(searchFocusNode: _searchFocusNode),
-            SizedBox(height: 16.h),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
