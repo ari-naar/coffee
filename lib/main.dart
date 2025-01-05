@@ -30,7 +30,7 @@ class CoffeeTrackApp extends StatelessWidget {
           return Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return MaterialApp(
-                title: 'CoffeeTrack',
+                title: 'BrewSpot',
                 themeMode: themeProvider.themeMode,
                 theme: AppTheme.lightTheme(themeProvider.fontSizeScale),
                 darkTheme: AppTheme.darkTheme(themeProvider.fontSizeScale),
