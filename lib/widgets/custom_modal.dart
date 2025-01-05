@@ -28,10 +28,13 @@ class CustomModalState extends State<CustomModal> {
     _controller = DraggableScrollableController();
     _controller?.addListener(_onSheetPositionChanged);
     _showBookmarks = widget.initialShowBookmarks;
-    if (_showBookmarks) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => expandModal());
-    }
     _searchFocusNode.addListener(_onFocusChange);
+
+    if (_showBookmarks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _controller?.jumpTo(0.5);
+      });
+    }
   }
 
   void _onSheetPositionChanged() {
@@ -50,7 +53,13 @@ class CustomModalState extends State<CustomModal> {
         _showBookmarks = widget.initialShowBookmarks;
       });
       if (_showBookmarks) {
-        expandModal();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _controller?.animateTo(
+            0.5,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        });
       }
     }
   }
