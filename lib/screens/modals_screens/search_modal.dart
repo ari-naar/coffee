@@ -57,54 +57,50 @@ class _SearchModalState extends State<SearchModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: CustomScrollView(
-        controller: widget.scrollController,
-        slivers: [
-          // Fixed header with filters
-          SliverToBoxAdapter(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ...cafeFilterOptions.entries.map((entry) {
-                          return Padding(
-                            padding: EdgeInsets.only(right: 8.w),
-                            child: CustomChipDropdown(
-                              title: '${entry.key}: ',
-                              options: entry.value,
-                              allowMultiSelect: entry.key == 'Features',
-                              onOptionsChanged: (selected) {
-                                setState(() {
-                                  selectedChipOptions[entry.key] = selected;
-                                });
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      ],
-                    ),
+    return CustomScrollView(
+      controller: widget.scrollController,
+      slivers: [
+        // Fixed header with filters
+        SliverToBoxAdapter(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      ...cafeFilterOptions.entries.map((entry) {
+                        return Padding(
+                          padding: EdgeInsets.only(right: 8.w),
+                          child: CustomChipDropdown(
+                            title: '${entry.key}: ',
+                            options: entry.value,
+                            allowMultiSelect: entry.key == 'Features',
+                            onOptionsChanged: (selected) {
+                              setState(() {
+                                selectedChipOptions[entry.key] = selected;
+                              });
+                            },
+                          ),
+                        );
+                      }),
+                    ],
                   ),
                 ),
-                SizedBox(height: 8.h),
-              ],
-            ),
+              ),
+              SizedBox(height: 8.h),
+            ],
           ),
-          // Scrollable grid section
-          SliverFillRemaining(
-            hasScrollBody: true,
-            fillOverscroll: true,
-            child: CafeGrid(),
-          ),
-        ],
-      ),
+        ),
+        // Scrollable grid section
+        SliverFillRemaining(
+          hasScrollBody: true,
+          fillOverscroll: true,
+          child: CafeGrid(),
+        ),
+      ],
     );
   }
 }

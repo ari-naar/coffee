@@ -15,7 +15,7 @@ class CafeGrid extends StatelessWidget {
         crossAxisSpacing: 12.w,
         mainAxisSpacing: 12.h,
       ),
-      itemCount: 10, // This will be replaced with actual cafe data count
+      itemCount: 10,
       itemBuilder: (context, index) {
         return const CafeCard();
       },

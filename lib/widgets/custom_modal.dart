@@ -52,7 +52,7 @@ class _CustomModalState extends State<CustomModal> {
 
   @override
   Widget build(BuildContext context) {
-    final contentOpacity = ((_currentSize - 0.1) / (0.5 - 0.1)).clamp(0.0, 1.0);
+    final contentOpacity = _currentSize <= 0.1 ? 0.0 : 1.0;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -68,9 +68,9 @@ class _CustomModalState extends State<CustomModal> {
         controller: _controller,
         initialChildSize: 0.1,
         minChildSize: 0.1,
-        maxChildSize: 0.5,
+        maxChildSize: 0.9,
         snap: true,
-        snapSizes: const [0.1, 0.5],
+        snapSizes: const [0.1, 0.5, 0.9],
         builder: (context, scrollController) {
           return Material(
             color: Colors.transparent,
