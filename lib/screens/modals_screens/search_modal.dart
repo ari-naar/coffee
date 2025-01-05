@@ -1,3 +1,4 @@
+import 'package:coffee_app/widgets/cafe_card.dart';
 import 'package:coffee_app/widgets/custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -56,12 +57,13 @@ class _SearchModalState extends State<SearchModal> {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
@@ -83,8 +85,30 @@ class _SearchModalState extends State<SearchModal> {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: 16.h),
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: GridView.builder(
+                physics: const BouncingScrollPhysics(),
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.8,
+                  crossAxisSpacing: 12.w,
+                  mainAxisSpacing: 12.h,
+                ),
+                itemCount:
+                    10, // This will be replaced with actual cafe data count
+                itemBuilder: (context, index) {
+                  return const CafeCard();
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
