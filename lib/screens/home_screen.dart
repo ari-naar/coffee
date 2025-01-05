@@ -10,21 +10,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isShowingBookmarks = false;
+  final _modalKey = GlobalKey<CustomModalState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green.shade100,
       body: Stack(
         children: [
-          // Centered "map" text
-          const Center(
-            child: Text(
-              'map',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.grey,
+          // Centered "map" text with tap handler
+          GestureDetector(
+            onTap: () {
+              _modalKey.currentState?.shrinkModal();
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Container(
+              color: Colors.transparent,
+              width: double.infinity,
+              height: double.infinity,
+              child: const Center(
+                child: Text(
+                  'map',
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.grey,
+                  ),
+                ),
               ),
             ),
+          ),
+          // Persistent bottom sheet
+          CustomModal(
+            key: _modalKey,
+            initialShowBookmarks: isShowingBookmarks,
           ),
           // Heart icon button
           Positioned(
@@ -44,18 +63,23 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: IconButton(
                 icon: Icon(
-                  Icons.favorite_border,
+                  isShowingBookmarks ? Icons.favorite : Icons.favorite_border,
                   size: 20.sp,
-                  color: Colors.grey[600],
+                  color:
+                      isShowingBookmarks ? Colors.red[400] : Colors.grey[600],
                 ),
                 onPressed: () {
-                  // Handle favorites
+                  setState(() {
+                    isShowingBookmarks = !isShowingBookmarks;
+                  });
+                  // Expand modal when showing bookmarks
+                  if (isShowingBookmarks) {
+                    _modalKey.currentState?.expandModal();
+                  }
                 },
               ),
             ),
           ),
-          // Persistent bottom sheet
-          const CustomModal(),
         ],
       ),
     );

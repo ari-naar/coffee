@@ -1,11 +1,7 @@
-import 'package:coffee_app/widgets/cafe_card.dart';
-import 'package:coffee_app/widgets/custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:coffee_app/widgets/custom_filter_chip.dart';
 import 'package:coffee_app/widgets/custom_chip_dropdown.dart';
 import 'package:coffee_app/widgets/cafe_grid.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 class SearchModal extends StatefulWidget {
   final DraggableScrollableController? modalController;
