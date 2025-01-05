@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 class CafeCard extends StatelessWidget {
   const CafeCard({super.key});
@@ -14,13 +13,14 @@ class CafeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 10,
             offset: Offset(0, 2.h),
           ),
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Cafe image section
@@ -83,7 +83,7 @@ class CafeCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -101,7 +101,7 @@ class CafeCard extends StatelessWidget {
           ),
           // Cafe details section
           Padding(
-            padding: EdgeInsets.all(12.r),
+            padding: EdgeInsets.all(12.w),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +138,7 @@ class CafeCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 4.h),
+                SizedBox(height: 2.h),
                 // Highlights
                 Text(
                   'Best for Lattes & Pour-overs',
@@ -146,49 +146,40 @@ class CafeCard extends StatelessWidget {
                     fontSize: 11.sp,
                     color: Colors.grey[600],
                   ),
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 8.h),
-                // Location and rating
+                SizedBox(height: 2.h),
+                // Rating and location
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.star_rate_rounded,
-                            size: 14.sp, color: Colors.amber),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '4.5',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '(128)',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
+                    Icon(Icons.star_rate_rounded,
+                        size: 14.sp, color: Colors.amber),
+                    SizedBox(width: 2.w),
+                    Text(
+                      '4.5',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on,
-                            size: 14.sp, color: Colors.grey),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '0.8 km',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
+                    SizedBox(width: 2.w),
+                    Text(
+                      '(128)',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(Icons.location_on, size: 14.sp, color: Colors.grey),
+                    SizedBox(width: 2.w),
+                    Text(
+                      '0.8 km',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey[600],
+                      ),
                     ),
                   ],
                 ),

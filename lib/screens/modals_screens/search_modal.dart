@@ -25,6 +25,7 @@ class SearchModal extends StatefulWidget {
 
 class _SearchModalState extends State<SearchModal> {
   Map<String, List<ChipOption>> selectedChipOptions = {};
+  bool isTrendingSelected = false;
 
   final Map<String, List<ChipOption>> cafeFilterOptions = {
     'Distance': [
@@ -71,6 +72,56 @@ class _SearchModalState extends State<SearchModal> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
+                      // Trending toggle chip
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.w),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              isTrendingSelected = !isTrendingSelected;
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(100.r),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 12.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: isTrendingSelected
+                                  ? Colors.red[400]
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(100.r),
+                              border: Border.all(
+                                color: Colors.red[400]!,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.trending_up,
+                                  size: 16.sp,
+                                  color: isTrendingSelected
+                                      ? Colors.white
+                                      : Colors.red[400],
+                                ),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  'Trending',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: isTrendingSelected
+                                        ? Colors.white
+                                        : Colors.red[400],
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Other filter chips
                       ...cafeFilterOptions.entries.map((entry) {
                         return Padding(
                           padding: EdgeInsets.only(right: 8.w),
