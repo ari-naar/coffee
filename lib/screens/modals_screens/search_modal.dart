@@ -1,3 +1,4 @@
+import 'package:coffee_app/widgets/custom_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:coffee_app/widgets/custom_filter_chip.dart';
@@ -5,7 +6,12 @@ import 'package:coffee_app/widgets/custom_chip_dropdown.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class SearchModal extends StatefulWidget {
-  const SearchModal({super.key});
+  final DraggableScrollableController? modalController;
+
+  const SearchModal({
+    super.key,
+    this.modalController,
+  });
 
   @override
   State<SearchModal> createState() => _SearchModalState();
@@ -13,6 +19,8 @@ class SearchModal extends StatefulWidget {
 
 class _SearchModalState extends State<SearchModal> {
   Map<String, List<ChipOption>> selectedChipOptions = {};
+  final FocusNode _searchFocusNode = FocusNode();
+  bool _isExpanded = false;
 
   final Map<String, List<ChipOption>> cafeFilterOptions = {
     'Distance': [
@@ -37,12 +45,6 @@ class _SearchModalState extends State<SearchModal> {
       ChipOption(label: 'Chain', value: 'chain'),
       ChipOption(label: 'Independent', value: 'independent'),
     ],
-    // 'Features': [
-    //   ChipOption(label: 'WiFi', value: 'wifi'),
-    //   ChipOption(label: 'Power Outlets', value: 'power'),
-    //   ChipOption(label: 'Quiet Space', value: 'quiet'),
-    //   ChipOption(label: 'Group Seating', value: 'group'),
-    // ],
     'Open Now': [
       ChipOption(label: 'Open', value: true),
       ChipOption(label: 'Closed', value: false),
@@ -50,45 +52,65 @@ class _SearchModalState extends State<SearchModal> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    _searchFocusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.removeListener(_onFocusChange);
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_searchFocusNode.hasFocus && !_isExpanded) {
+      _isExpanded = true;
+      widget.modalController?.animateTo(
+        0.5,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomSearch(searchFocusNode: _searchFocusNode),
+            SizedBox(height: 16.h),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ...cafeFilterOptions.entries.map((entry) {
+                    return Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: CustomChipDropdown(
+                        title: '${entry.key}: ',
+                        options: entry.value,
+                        allowMultiSelect: entry.key == 'Features',
+                        onOptionsChanged: (selected) {
+                          setState(() {
+                            selectedChipOptions[entry.key] = selected;
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ],
               ),
             ),
-          ),
-          SizedBox(height: 16.h),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                ...cafeFilterOptions.entries.map((entry) {
-                  return Padding(
-                    padding: EdgeInsets.only(right: 8.w),
-                    child: CustomChipDropdown(
-                      title: '${entry.key}: ',
-                      options: entry.value,
-                      allowMultiSelect: entry.key == 'Features',
-                      onOptionsChanged: (selected) {
-                        setState(() {
-                          selectedChipOptions[entry.key] = selected;
-                        });
-                      },
-                    ),
-                  );
-                }).toList(),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
