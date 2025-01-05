@@ -2,7 +2,8 @@ import 'package:coffee_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'services/service_locator.dart';
+import 'package:provider/provider.dart';
+import 'providers/theme_provider.dart';
 import 'themes/app_theme.dart';
 
 void main() async {
@@ -10,9 +11,6 @@ void main() async {
 
   // Load environment variables
   await dotenv.load(fileName: '.env');
-
-  // Initialize services
-  await serviceLocator.initialize();
 
   runApp(const CoffeeTrackApp());
 }
@@ -22,28 +20,27 @@ class CoffeeTrackApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(402, 874),
-      builder: (context, child) {
-        return ValueListenableBuilder<ThemeMode>(
-          valueListenable: serviceLocator.theme.themeMode,
-          builder: (context, themeMode, child) {
-            return ValueListenableBuilder<double>(
-              valueListenable: serviceLocator.theme.fontSizeScale,
-              builder: (context, fontSizeScale, child) {
-                return MaterialApp(
-                  title: 'CoffeeTrack',
-                  themeMode: themeMode,
-                  theme: AppTheme.lightTheme(fontSizeScale),
-                  darkTheme: AppTheme.darkTheme(fontSizeScale),
-                  debugShowCheckedModeBanner: false,
-                  home: const HomeScreen(),
-                );
-              },
-            );
-          },
-        );
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: ScreenUtilInit(
+        designSize: const Size(402, 874),
+        builder: (context, child) {
+          return Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return MaterialApp(
+                title: 'CoffeeTrack',
+                themeMode: themeProvider.themeMode,
+                theme: AppTheme.lightTheme(themeProvider.fontSizeScale),
+                darkTheme: AppTheme.darkTheme(themeProvider.fontSizeScale),
+                debugShowCheckedModeBanner: false,
+                home: const HomeScreen(),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
