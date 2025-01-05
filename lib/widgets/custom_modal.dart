@@ -111,12 +111,10 @@ class _CustomModalState extends State<CustomModal> {
                           duration: const Duration(milliseconds: 100),
                           child: IgnorePointer(
                             ignoring: contentOpacity < 0.1,
-                            child: SingleChildScrollView(
-                              controller: scrollController,
-                              child: SearchModal(
-                                modalController: _controller,
-                                searchFocusNode: _searchFocusNode,
-                              ),
+                            child: SearchModal(
+                              modalController: _controller,
+                              searchFocusNode: _searchFocusNode,
+                              scrollController: scrollController,
                             ),
                           ),
                         ),
