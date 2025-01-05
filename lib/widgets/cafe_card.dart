@@ -100,105 +100,99 @@ class CafeCard extends StatelessWidget {
             ),
           ),
           // Cafe details section
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(12.r),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Top section: Name and status
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Cafe Name',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6.w, vertical: 2.h),
-                            decoration: BoxDecoration(
-                              color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(4.r),
-                            ),
-                            child: Text(
-                              'Open',
-                              style: TextStyle(
-                                color: Colors.green[700],
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
+          Padding(
+            padding: EdgeInsets.all(12.r),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Name and status
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Cafe Name',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 4.h),
-                      // Location and rating
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.star_rate_rounded,
-                                  size: 14.sp, color: Colors.amber),
-                              SizedBox(width: 4.w),
-                              Text(
-                                '4.5',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(width: 4.w),
-                              Text(
-                                '(128)',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on,
-                                  size: 14.sp, color: Colors.grey),
-                              SizedBox(width: 4.w),
-                              Text(
-                                '0.8 km',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  // Bottom section: Highlights
-                  Text(
-                    'Best for Lattes & Pour-overs',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: Colors.grey[600],
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Text(
+                        'Open',
+                        style: TextStyle(
+                          color: Colors.green[700],
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4.h),
+                // Highlights
+                Text(
+                  'Best for Lattes & Pour-overs',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    color: Colors.grey[600],
                   ),
-                ],
-              ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 8.h),
+                // Location and rating
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.star_rate_rounded,
+                            size: 14.sp, color: Colors.amber),
+                        SizedBox(width: 4.w),
+                        Text(
+                          '4.5',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          '(128)',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on,
+                            size: 14.sp, color: Colors.grey),
+                        SizedBox(width: 4.w),
+                        Text(
+                          '0.8 km',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
