@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import '../widgets/custom_snackbar.dart';
+import '../models/cafe.dart';
 
 class MapService {
   static final MapService _instance = MapService._internal();
@@ -16,6 +17,9 @@ class MapService {
   OverlayEntry? _currentOverlay;
 
   StreamSubscription<geo.Position>? _locationSubscription;
+
+  PointAnnotationManager? _pointAnnotationManager;
+  final Map<String, Cafe> _cafeMarkers = {};
 
   void startLocationUpdates(void Function(geo.Position) onLocationUpdate) {
     _locationSubscription?.cancel();
@@ -215,9 +219,55 @@ class MapService {
     }
   }
 
+  Future<void> addCafeMarkers(MapboxMap mapboxMap, List<Cafe> cafes) async {
+    _pointAnnotationManager ??=
+        await mapboxMap.annotations.createPointAnnotationManager();
+
+    // Clear existing markers
+    await _pointAnnotationManager?.deleteAll();
+    _cafeMarkers.clear();
+
+    for (final cafe in cafes) {
+      try {
+        final options = PointAnnotationOptions(
+          geometry: Point(
+            coordinates: Position(
+              cafe.longitude,
+              cafe.latitude,
+            ),
+          ).toJson(),
+          iconSize: 1.2,
+          iconImage: 'cafe_marker', // We'll need to add this asset
+          textField: cafe.name,
+          textOffset: [0, 1.2],
+          textColor: Colors.black.value,
+          textHaloColor: Colors.white.value,
+          textHaloWidth: 1.0,
+        );
+
+        final point = await _pointAnnotationManager?.create(options);
+        if (point != null) {
+          _cafeMarkers[point.id.toString()] = cafe;
+        }
+      } catch (e) {
+        print('Error adding cafe marker: $e');
+      }
+    }
+  }
+
+  Cafe? getCafeFromMarkerId(String markerId) {
+    return _cafeMarkers[markerId];
+  }
+
+  void clearCafeMarkers() {
+    _pointAnnotationManager?.deleteAll();
+    _cafeMarkers.clear();
+  }
+
   @override
   void dispose() {
     stopLocationUpdates();
+    clearCafeMarkers();
     _currentOverlay?.remove();
     _currentOverlay = null;
   }

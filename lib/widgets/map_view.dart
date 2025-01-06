@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import '../services/map_service.dart';
+import '../services/foursquare_service.dart';
+import '../models/cafe.dart';
 
 class MapView extends StatefulWidget {
   const MapView({super.key});
@@ -18,6 +20,8 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
   bool _isMapReady = false;
   bool _isInitialLocationSet = false;
   bool _isCameraCentered = false;
+  final _foursquareService = FoursquareService();
+  List<Cafe> _nearbyCafes = [];
 
   @override
   void initState() {
@@ -35,6 +39,13 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
           _initialCameraPosition = cameraPosition;
           _isInitialLocationSet = true;
         });
+
+        // Load cafes after getting initial position
+        await _loadNearbyCafes(
+          cameraPosition.center!['lat'] as double,
+          cameraPosition.center!['lng'] as double,
+        );
+
         // Start tracking only after we have the initial position
         _startLocationTracking();
       }
@@ -43,13 +54,32 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _loadNearbyCafes(double latitude, double longitude) async {
+    try {
+      final cafeData =
+          await _foursquareService.searchCafes(latitude, longitude);
+      if (mounted) {
+        setState(() {
+          _nearbyCafes =
+              cafeData.map((data) => Cafe.fromFoursquare(data)).toList();
+        });
+        if (_mapboxMap != null) {
+          await _mapService.addCafeMarkers(_mapboxMap!, _nearbyCafes);
+        }
+      }
+    } catch (e) {
+      print('Error loading nearby cafes: $e');
+    }
+  }
+
   void _startLocationTracking() {
-    // Add a small delay before starting location updates
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {
         _mapService.startLocationUpdates((position) {
           if (_mapboxMap != null && _isMapReady && mounted) {
             _mapService.animateToLocation(_mapboxMap!, position);
+            // Refresh cafes when location updates significantly
+            _loadNearbyCafes(position.latitude, position.longitude);
           }
         });
       }
@@ -58,6 +88,7 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _mapService.clearCafeMarkers();
     _mapService.stopLocationUpdates();
     _mapService.dispose();
     WidgetsBinding.instance.removeObserver(this);
