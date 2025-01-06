@@ -28,11 +28,13 @@
 	<true/>
 	<key>MGLMapboxAccessToken</key>
 	<string>pk.eyJ1IjoiYXJ5ZWhuYWFyYXBwcyIsImEiOiJjbTVqamtqMmQweXd5Mmlvb3F4c3RkN2lnIn0.4vh_oIE-M1Og9Fu_n0SjVw</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
+	<key>MGLMapboxMetricsEnabledSettingShownInApp</key>
+	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>CoffeeTrack needs access to location to find coffee shops near you and save the locations of your coffee experiences.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>CoffeeTrack needs access to location to find coffee shops near you and save the locations of your coffee experiences even when the app is in background.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>CoffeeTrack needs access to location to find coffee shops near you and save the locations of your coffee experiences.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
