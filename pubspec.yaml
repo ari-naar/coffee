@@ -90,4 +90,4 @@ flutter:
     - assets/images/
     - assets/icons/
     - .env
-    - assets/icons/cafe_marker.png
+    # - assets/icons/cafe_marker.png

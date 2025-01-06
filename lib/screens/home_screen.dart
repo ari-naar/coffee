@@ -32,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
           CustomModal(
             key: _modalKey,
             initialShowBookmarks: isShowingBookmarks,
+            visibleCafes: const [],
+            onCafeTap: (cafe) {},
           ),
           // Heart icon button
           Positioned(

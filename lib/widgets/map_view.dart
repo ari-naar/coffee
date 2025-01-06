@@ -1,7 +1,11 @@
+import 'dart:ui' as ui;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:coffee_app/widgets/cafe_grid.dart';
 import '../services/map_service.dart';
 import '../services/foursquare_service.dart';
 import '../models/cafe.dart';
@@ -54,6 +58,38 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
     }
   }
 
+  void _showCafeDetails(Cafe cafe) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              cafe.name,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            if (cafe.address != null) Text(cafe.address!),
+            const SizedBox(height: 8),
+            Text('${(cafe.distance).round()}m away'),
+            if (cafe.rating != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.star, color: Colors.amber),
+                  Text(' ${cafe.rating}'),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _loadNearbyCafes(double latitude, double longitude) async {
     try {
       final cafeData =
@@ -64,7 +100,11 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
               cafeData.map((data) => Cafe.fromFoursquare(data)).toList();
         });
         if (_mapboxMap != null) {
-          await _mapService.addCafeMarkers(_mapboxMap!, _nearbyCafes);
+          await _mapService.addCafeMarkers(
+            _mapboxMap!,
+            _nearbyCafes,
+            onTap: _showCafeDetails,
+          );
         }
       }
     } catch (e) {
@@ -107,66 +147,103 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
     _mapboxMap = mapboxMap;
 
     try {
-      // Small delay to ensure network connection is ready
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // Set initial camera position immediately
-      await mapboxMap.setCamera(_initialCameraPosition!);
-
-      // Run style loading and gesture setup in parallel
-      await Future.wait([
-        _mapService
-            .updateMapStyle(mapboxMap, Theme.of(context).brightness)
-            .timeout(
-          const Duration(seconds: 5),
-          onTimeout: () {
-            print('Style loading timed out, retrying...');
-            return _mapService.updateMapStyle(
-                mapboxMap, Theme.of(context).brightness);
-          },
-        ),
-        mapboxMap.gestures.updateSettings(
-          GesturesSettings(
-            rotateEnabled: true,
-            scrollEnabled: true,
-            doubleTapToZoomInEnabled: true,
-            doubleTouchToZoomOutEnabled: true,
-            quickZoomEnabled: true,
-            pinchToZoomEnabled: true,
-          ),
-        ),
-      ]);
-
-      setState(() {
-        _isMapReady = true;
-      });
-
-      // Immediately animate to user location
-      print('Animating to initial position...');
-      await _mapService.animateToLocation(
-        mapboxMap,
-        geo.Position(
-          latitude: _initialCameraPosition!.center!['lat'] as double,
-          longitude: _initialCameraPosition!.center!['lng'] as double,
-          timestamp: DateTime.now(),
-          accuracy: 0,
-          altitude: 0,
-          heading: 0,
-          speed: 0,
-          speedAccuracy: 0,
-          altitudeAccuracy: 0,
-          headingAccuracy: 0,
+      // Load style and setup gestures
+      await _mapService.updateMapStyle(mapboxMap, Theme.of(context).brightness);
+      await mapboxMap.gestures.updateSettings(
+        GesturesSettings(
+          rotateEnabled: false,
+          scrollEnabled: true,
+          doubleTapToZoomInEnabled: false,
+          doubleTouchToZoomOutEnabled: false,
+          quickZoomEnabled: false,
+          pinchToZoomEnabled: false,
         ),
       );
 
-      setState(() {
-        _isCameraCentered = true;
-      });
+      // Set initial camera position
+      if (_initialCameraPosition != null) {
+        print('Setting initial camera position...');
+        await mapboxMap.setCamera(_initialCameraPosition!);
+
+        setState(() {
+          _isMapReady = true;
+          _isCameraCentered = true;
+        });
+      }
+
+      // Add camera movement listener with debounce
+      var lastUpdate = DateTime.now();
+      mapboxMap.subscribe((Event e) async {
+        if (!mounted || !_isMapReady) return;
+
+        // Debounce updates to once per second
+        final now = DateTime.now();
+        if (now.difference(lastUpdate) < const Duration(seconds: 1)) return;
+        lastUpdate = now;
+
+        try {
+          final cameraState = await _mapboxMap?.getCameraState();
+          if (cameraState?.center != null) {
+            final center = cameraState!.center!;
+            if (center['lat'] != null && center['lng'] != null) {
+              final lat = center['lat'] as double;
+              final lng = center['lng'] as double;
+              if (_shouldRefreshCafes(lat, lng)) {
+                print('Refreshing cafes at: $lat, $lng');
+                await _loadNearbyCafes(lat, lng);
+              }
+            }
+          }
+        } catch (e) {
+          print('Error handling map movement: $e');
+        }
+      }, ["camera-changed"]);
+
       print('Map initialization complete');
-    } catch (e, stackTrace) {
+    } catch (e) {
       print('Error in map creation: $e');
-      print('Stack trace: $stackTrace');
     }
+  }
+
+  bool _shouldRefreshCafes(double newLat, double newLng) {
+    if (_initialCameraPosition?.center == null) return true;
+
+    final oldLat = _initialCameraPosition!.center!['lat'] as double;
+    final oldLng = _initialCameraPosition!.center!['lng'] as double;
+
+    // Calculate rough distance (in degrees) - about 0.01 degrees = 1km
+    final distance = ((newLat - oldLat) * (newLat - oldLat) +
+            (newLng - oldLng) * (newLng - oldLng))
+        .abs();
+
+    return distance > 0.01; // Refresh if moved more than ~1km
+  }
+
+  Future<Uint8List> _loadCafeIcon() async {
+    final iconData = Icons.local_cafe;
+    final pictureRecorder = ui.PictureRecorder();
+    final canvas = Canvas(pictureRecorder);
+    final paint = Paint()..color = Colors.brown;
+
+    // Draw the icon
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: String.fromCharCode(iconData.codePoint),
+        style: TextStyle(
+          fontSize: 48,
+          fontFamily: iconData.fontFamily,
+          color: paint.color,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(canvas, Offset.zero);
+
+    final picture = pictureRecorder.endRecording();
+    final image = await picture.toImage(48, 48);
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
   }
 
   @override
@@ -199,13 +276,8 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
         if (!_isCameraCentered)
           Container(
             color: Colors.black45,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CupertinoActivityIndicator(radius: 15),
-                ],
-              ),
+            child: const Center(
+              child: CupertinoActivityIndicator(radius: 15),
             ),
           ),
       ],

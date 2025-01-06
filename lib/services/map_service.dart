@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../widgets/custom_snackbar.dart';
 import '../models/cafe.dart';
+import 'dart:ui' as ui;
 
 class MapService {
   static final MapService _instance = MapService._internal();
@@ -12,7 +14,7 @@ class MapService {
   MapService._internal();
 
   String get mapboxAccessToken => dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
-  static const _defaultZoom = 10.0;
+  static const _defaultZoom = 12.0;
 
   OverlayEntry? _currentOverlay;
 
@@ -20,6 +22,7 @@ class MapService {
 
   PointAnnotationManager? _pointAnnotationManager;
   final Map<String, Cafe> _cafeMarkers = {};
+  Function(Cafe)? _onTap;
 
   void startLocationUpdates(void Function(geo.Position) onLocationUpdate) {
     _locationSubscription?.cancel();
@@ -219,49 +222,53 @@ class MapService {
     }
   }
 
-  Future<void> addCafeMarkers(MapboxMap mapboxMap, List<Cafe> cafes) async {
-    _pointAnnotationManager ??=
-        await mapboxMap.annotations.createPointAnnotationManager();
+  Future<void> addCafeMarkers(MapboxMap mapboxMap, List<Cafe> cafes,
+      {Function(Cafe)? onTap}) async {
+    try {
+      _onTap = onTap;
 
-    // Clear existing markers
-    await _pointAnnotationManager?.deleteAll();
-    _cafeMarkers.clear();
+      // Create point annotation manager if not exists
+      _pointAnnotationManager ??=
+          await mapboxMap.annotations.createPointAnnotationManager();
 
-    for (final cafe in cafes) {
-      try {
-        final options = PointAnnotationOptions(
-          geometry: Point(
-            coordinates: Position(
-              cafe.longitude,
-              cafe.latitude,
-            ),
-          ).toJson(),
-          iconSize: 1.2,
-          iconImage: 'cafe_marker', // We'll need to add this asset
-          textField: cafe.name,
-          textOffset: [0, 1.2],
-          textColor: Colors.black.value,
-          textHaloColor: Colors.white.value,
-          textHaloWidth: 1.0,
-        );
+      // Clear existing markers
+      await _pointAnnotationManager?.deleteAll();
+      _cafeMarkers.clear();
 
-        final point = await _pointAnnotationManager?.create(options);
-        if (point != null) {
-          _cafeMarkers[point.id.toString()] = cafe;
+      // Add markers
+      for (final cafe in cafes) {
+        try {
+          final options = PointAnnotationOptions(
+            geometry: Point(
+              coordinates: Position(
+                cafe.longitude,
+                cafe.latitude,
+              ),
+            ).toJson(),
+            textField: "●", // Dot symbol
+            textSize: 30.0,
+            textColor: Colors.brown.value,
+            textHaloColor: Colors.white.value,
+            textHaloWidth: 2.0,
+          );
+
+          final point = await _pointAnnotationManager?.create(options);
+          if (point != null) {
+            _cafeMarkers[point.id.toString()] = cafe;
+          }
+        } catch (e) {
+          print('Error adding cafe marker: $e');
         }
-      } catch (e) {
-        print('Error adding cafe marker: $e');
       }
+    } catch (e) {
+      print('Error setting up cafe markers: $e');
     }
-  }
-
-  Cafe? getCafeFromMarkerId(String markerId) {
-    return _cafeMarkers[markerId];
   }
 
   void clearCafeMarkers() {
     _pointAnnotationManager?.deleteAll();
     _cafeMarkers.clear();
+    _onTap = null;
   }
 
   @override

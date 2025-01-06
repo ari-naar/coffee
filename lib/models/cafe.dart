@@ -22,19 +22,29 @@ class Cafe {
   });
 
   factory Cafe.fromFoursquare(Map<String, dynamic> json) {
-    final location = json['geocodes']['main'];
-    final address = json['location'];
+    final location = json['geocodes']?['main'] ?? {};
+    final address = json['location'] ?? {};
+
+    // Handle missing or null values
+    final lat = location['latitude'] ?? 0.0;
+    final lng = location['longitude'] ?? 0.0;
+    final formattedAddress = address['formatted_address'] as String?;
+    final rating = json['rating']?.toDouble();
+    final distance = (json['distance'] ?? 0).toDouble();
+    final isOpen = json['hours']?['is_open'] ?? false;
 
     return Cafe(
-      id: json['fsq_id'],
-      name: json['name'],
-      latitude: location['latitude'],
-      longitude: location['longitude'],
-      address: address['formatted_address'],
-      rating: json['rating']?.toDouble(),
+      id: json['fsq_id'] ?? '',
+      name: json['name'] ?? 'Unknown Cafe',
+      latitude: lat is int ? lat.toDouble() : lat,
+      longitude: lng is int ? lng.toDouble() : lng,
+      address: formattedAddress,
+      rating: rating != null
+          ? (rating / 2).clamp(0.0, 5.0)
+          : null, // Convert to 5-star scale
       photoUrl: null, // We'll need to make a separate call for photos
-      isOpen: json['hours']?['is_open'] ?? false,
-      distance: json['distance']?.toDouble() ?? 0.0,
+      isOpen: isOpen,
+      distance: distance,
     );
   }
 

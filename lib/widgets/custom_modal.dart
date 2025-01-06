@@ -1,15 +1,20 @@
 import 'package:coffee_app/screens/modals_screens/search_modal.dart';
 import 'package:coffee_app/screens/modals_screens/bookmarks_modal.dart';
 import 'package:coffee_app/widgets/custom_search.dart';
+import 'package:coffee_app/models/cafe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomModal extends StatefulWidget {
   final bool initialShowBookmarks;
+  final List<Cafe> visibleCafes;
+  final Function(Cafe) onCafeTap;
 
   const CustomModal({
     super.key,
     this.initialShowBookmarks = false,
+    required this.visibleCafes,
+    required this.onCafeTap,
   });
 
   @override
@@ -159,6 +164,8 @@ class CustomModalState extends State<CustomModal> {
                                   modalController: _controller,
                                   searchFocusNode: _searchFocusNode,
                                   scrollController: scrollController,
+                                  visibleCafes: widget.visibleCafes,
+                                  onCafeTap: widget.onCafeTap,
                                 ),
                               ),
                       ),

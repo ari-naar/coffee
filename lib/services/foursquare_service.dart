@@ -13,7 +13,7 @@ class FoursquareService {
 
   Future<List<Map<String, dynamic>>> searchCafes(
       double latitude, double longitude,
-      {int radius = 1000, // Search radius in meters
+      {int radius = 5000, // Reduced radius to 5km for more relevant results
       int limit = 50}) async {
     try {
       final queryParameters = {
@@ -21,8 +21,9 @@ class FoursquareService {
         'll': '$latitude,$longitude',
         'radius': radius.toString(),
         'limit': limit.toString(),
-        'categories': '13032', // Foursquare category ID for coffee shops
+        'categories': '13032,13035,13065', // Coffee Shop, Cafe, Coffee Roaster
         'sort': 'DISTANCE',
+        'fields': 'fsq_id,name,geocodes,location,distance,rating,hours,photos',
         'v': _version,
       };
 
@@ -38,7 +39,18 @@ class FoursquareService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        return List<Map<String, dynamic>>.from(data['results']);
+        if (data['results'] == null) {
+          print('No results found in response');
+          return [];
+        }
+
+        final results = List<Map<String, dynamic>>.from(data['results']);
+        // Filter out results with missing critical data
+        return results.where((result) {
+          return result['fsq_id'] != null &&
+              result['name'] != null &&
+              result['geocodes']?['main'] != null;
+        }).toList();
       } else {
         print('Error fetching cafes: ${response.statusCode}');
         print('Response body: ${response.body}');

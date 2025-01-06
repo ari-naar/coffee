@@ -93,7 +93,10 @@ class _BookmarksModalState extends State<BookmarksModal> {
         SliverFillRemaining(
           hasScrollBody: true,
           fillOverscroll: true,
-          child: CafeGrid(),
+          child: CafeGrid(
+            cafes: [],
+            onCafeTap: (Cafe) {},
+          ),
         ),
       ],
     );

@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:coffee_app/widgets/custom_chip_dropdown.dart';
 import 'package:coffee_app/widgets/cafe_grid.dart';
+import 'package:coffee_app/models/cafe.dart';
 
 class SearchModal extends StatefulWidget {
   final DraggableScrollableController? modalController;
   final FocusNode searchFocusNode;
   final ScrollController? scrollController;
+  final List<Cafe> visibleCafes;
+  final Function(Cafe) onCafeTap;
 
   const SearchModal({
     super.key,
     this.modalController,
     required this.searchFocusNode,
     this.scrollController,
+    required this.visibleCafes,
+    required this.onCafeTap,
   });
 
   @override
@@ -145,7 +150,10 @@ class _SearchModalState extends State<SearchModal> {
         SliverFillRemaining(
           hasScrollBody: true,
           fillOverscroll: true,
-          child: CafeGrid(),
+          child: CafeGrid(
+            cafes: widget.visibleCafes,
+            onCafeTap: widget.onCafeTap,
+          ),
         ),
       ],
     );
