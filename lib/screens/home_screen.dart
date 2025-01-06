@@ -1,4 +1,5 @@
 import 'package:coffee_app/widgets/custom_modal.dart';
+import 'package:coffee_app/widgets/map_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -25,20 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _modalKey.currentState?.shrinkModal();
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: Container(
-              color: Colors.transparent,
-              width: double.infinity,
-              height: double.infinity,
-              child: const Center(
-                child: Text(
-                  'map',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-            ),
+            child: MapView(),
           ),
           // Persistent bottom sheet
           CustomModal(

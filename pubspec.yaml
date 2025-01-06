@@ -42,12 +42,12 @@ dependencies:
 
   # UI
   cupertino_icons: ^1.0.8
-  google_maps_flutter: ^2.5.0
+  mapbox_maps_flutter: 0.4.3
   cached_network_image: ^3.3.0
   flutter_rating_bar: ^4.0.1
   shimmer: ^3.0.0
   hugeicons: ^0.0.7
-  
+
   # Location
   geolocator: ^13.0.2
   geocoding: ^3.0.0

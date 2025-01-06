@@ -1,8 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
     <application
         android:label="coffee_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.mapbox.token" 
+            android:value="pk.eyJ1IjoiYXJ5ZWhuYWFyYXBwcyIsImEiOiJjbTVqamtqMmQweXd5Mmlvb3F4c3RkN2lnIn0.4vh_oIE-M1Og9Fu_n0SjVw" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

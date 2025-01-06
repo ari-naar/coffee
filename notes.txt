@@ -1,0 +1,9 @@
+MapBox Pods Issue Fix:
+    public var annotations: [String: Optional<Any>] {
+       var result: [String: Optional<Any>] = [:]
+        for (view, options) in idsByView.compactMapValues({ [mapboxMap] id in try? mapboxMap.options(forViewAnnotationWithId: id) }) {
+           let key = String(describing: view)
+            result[key] = options
+        }
+        return result
+    }
