@@ -42,12 +42,9 @@ class MapService {
   Future<void> animateToLocation(
       MapboxMap mapboxMap, geo.Position position) async {
     final cameraOptions = CameraOptions(
-      center: Point(
-        coordinates: Position(
-          position.longitude,
-          position.latitude,
-        ),
-      ).toJson(),
+      center: Point.fromJson({
+        'coordinates': [position.longitude, position.latitude]
+      }),
       zoom: _defaultZoom,
     );
 
@@ -192,10 +189,9 @@ class MapService {
         'Setting camera position: lat=$latitude, lng=$longitude, zoom=$_defaultZoom');
 
     return CameraOptions(
-      center: <String, dynamic>{
-        'lng': longitude,
-        'lat': latitude,
-      },
+      center: Point.fromJson({
+        'coordinates': [longitude, latitude]
+      }),
       zoom: _defaultZoom,
     );
   }
@@ -239,12 +235,9 @@ class MapService {
       for (final cafe in cafes) {
         try {
           final options = PointAnnotationOptions(
-            geometry: Point(
-              coordinates: Position(
-                cafe.longitude,
-                cafe.latitude,
-              ),
-            ).toJson(),
+            geometry: Point.fromJson({
+              'coordinates': [cafe.longitude, cafe.latitude]
+            }),
             textField: "●", // Dot symbol
             textSize: 30.0,
             textColor: Colors.brown.value,

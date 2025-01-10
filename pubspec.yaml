@@ -32,10 +32,10 @@ dependencies:
     sdk: flutter
 
   # Firebase
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.15.3
-  cloud_firestore: ^4.13.6
-  firebase_storage: ^11.5.6
+  firebase_core: ^3.10.0
+  firebase_auth: ^5.4.0
+  cloud_firestore: ^5.6.1
+  firebase_storage: ^12.4.0
 
   # Core
   http: ^1.1.0
@@ -48,7 +48,8 @@ dependencies:
 
   # UI
   cupertino_icons: ^1.0.8
-  mapbox_maps_flutter: 0.4.3
+  # mapbox_maps_flutter: 0.4.3
+  mapbox_maps_flutter: ^2.5.0
   cached_network_image: ^3.3.0
   flutter_rating_bar: ^4.0.1
   shimmer: ^3.0.0

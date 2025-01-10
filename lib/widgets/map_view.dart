@@ -50,10 +50,13 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
         });
 
         // Load cafes after getting initial position
-        await _loadNearbyCafes(
-          cameraPosition.center!['lat'] as double,
-          cameraPosition.center!['lng'] as double,
-        );
+        final center = cameraPosition.center!.coordinates;
+        if (center.length >= 2) {
+          await _loadNearbyCafes(
+            center[1]!.toDouble(), // latitude
+            center[0]!.toDouble(), // longitude
+          );
+        }
 
         // Start tracking only after we have the initial position
         _startLocationTracking();
@@ -213,7 +216,9 @@ Cafe Details:
 
       // Add camera movement listener with debounce
       var lastUpdate = DateTime.now();
-      mapboxMap.subscribe((Event e) async {
+      Timer? debounceTimer;
+
+      mapboxMap.onMapIdle = () async {
         if (!mounted || !_isMapReady) return;
 
         // Debounce updates to once per second
@@ -222,12 +227,13 @@ Cafe Details:
         lastUpdate = now;
 
         try {
-          final cameraState = await _mapboxMap?.getCameraState();
-          if (cameraState?.center != null) {
-            final center = cameraState!.center!;
-            if (center['lat'] != null && center['lng'] != null) {
-              final lat = center['lat'] as double;
-              final lng = center['lng'] as double;
+          final center =
+              await mapboxMap.getCameraState().then((state) => state.center);
+          if (center != null) {
+            final coordinates = center.coordinates;
+            if (coordinates.length >= 2) {
+              final lat = coordinates[1]!.toDouble(); // latitude
+              final lng = coordinates[0]!.toDouble(); // longitude
               if (_shouldRefreshCafes(lat, lng)) {
                 print('Refreshing cafes at: $lat, $lng');
                 await _loadNearbyCafes(lat, lng);
@@ -237,7 +243,7 @@ Cafe Details:
         } catch (e) {
           print('Error handling map movement: $e');
         }
-      }, ["camera-changed"]);
+      };
 
       print('Map initialization complete');
     } catch (e) {
@@ -248,8 +254,11 @@ Cafe Details:
   bool _shouldRefreshCafes(double newLat, double newLng) {
     if (_initialCameraPosition?.center == null) return true;
 
-    final oldLat = _initialCameraPosition!.center!['lat'] as double;
-    final oldLng = _initialCameraPosition!.center!['lng'] as double;
+    final oldCenter = _initialCameraPosition!.center!.coordinates;
+    if (oldCenter.length < 2) return true;
+
+    final oldLat = oldCenter[1]!.toDouble(); // latitude
+    final oldLng = oldCenter[0]!.toDouble(); // longitude
 
     // Calculate rough distance (in degrees) - about 0.01 degrees = 1km
     final distance = ((newLat - oldLat) * (newLat - oldLat) +
@@ -305,12 +314,9 @@ Cafe Details:
       children: [
         MapWidget(
           key: const ValueKey("mapWidget"),
-          resourceOptions: ResourceOptions(
-            accessToken: _mapService.mapboxAccessToken,
-          ),
-          styleUri: _mapService.getMapStyle(Theme.of(context).brightness),
-          cameraOptions: _initialCameraPosition!,
           onMapCreated: _onMapCreated,
+          cameraOptions: _initialCameraPosition!,
+          styleUri: _mapService.getMapStyle(Theme.of(context).brightness),
           textureView: true,
         ),
         if (!_isCameraCentered)
