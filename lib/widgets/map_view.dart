@@ -31,6 +31,8 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
   bool _isCameraCentered = false;
   final _foursquareService = FoursquareService();
   List<Cafe> _nearbyCafes = [];
+  Timer? _cameraUpdateTimer;
+  Point? _lastCenter;
 
   @override
   void initState() {
@@ -171,6 +173,7 @@ Cafe Details:
 
   @override
   void dispose() {
+    _cameraUpdateTimer?.cancel();
     _mapService.clearCafeMarkers();
     _mapService.stopLocationUpdates();
     _mapService.dispose();
@@ -183,6 +186,40 @@ Cafe Details:
     if (_mapboxMap != null && _isMapReady) {
       _mapService.updateMapStyle(_mapboxMap!, Theme.of(context).brightness);
     }
+  }
+
+  Future<void> _startCameraUpdateTimer(MapboxMap mapboxMap) async {
+    _cameraUpdateTimer?.cancel();
+    var lastUpdate = DateTime.now();
+
+    _cameraUpdateTimer =
+        Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+      if (!mounted || !_isMapReady) return;
+
+      try {
+        final center =
+            await mapboxMap.getCameraState().then((state) => state.center);
+        if (center != null && center != _lastCenter) {
+          // Debounce updates to once per second
+          final now = DateTime.now();
+          if (now.difference(lastUpdate) < const Duration(seconds: 1)) return;
+          lastUpdate = now;
+
+          final coordinates = center.coordinates;
+          if (coordinates.length >= 2) {
+            final lat = coordinates[1]!.toDouble(); // latitude
+            final lng = coordinates[0]!.toDouble(); // longitude
+            if (_shouldRefreshCafes(lat, lng)) {
+              print('Refreshing cafes at: $lat, $lng');
+              await _loadNearbyCafes(lat, lng);
+            }
+          }
+          _lastCenter = center;
+        }
+      } catch (e) {
+        print('Error handling map movement: $e');
+      }
+    });
   }
 
   Future<void> _onMapCreated(MapboxMap mapboxMap) async {
@@ -214,36 +251,8 @@ Cafe Details:
         });
       }
 
-      // Add camera movement listener with debounce
-      var lastUpdate = DateTime.now();
-      Timer? debounceTimer;
-
-      mapboxMap.onMapIdle = () async {
-        if (!mounted || !_isMapReady) return;
-
-        // Debounce updates to once per second
-        final now = DateTime.now();
-        if (now.difference(lastUpdate) < const Duration(seconds: 1)) return;
-        lastUpdate = now;
-
-        try {
-          final center =
-              await mapboxMap.getCameraState().then((state) => state.center);
-          if (center != null) {
-            final coordinates = center.coordinates;
-            if (coordinates.length >= 2) {
-              final lat = coordinates[1]!.toDouble(); // latitude
-              final lng = coordinates[0]!.toDouble(); // longitude
-              if (_shouldRefreshCafes(lat, lng)) {
-                print('Refreshing cafes at: $lat, $lng');
-                await _loadNearbyCafes(lat, lng);
-              }
-            }
-          }
-        } catch (e) {
-          print('Error handling map movement: $e');
-        }
-      };
+      // Start camera update timer
+      await _startCameraUpdateTimer(mapboxMap);
 
       print('Map initialization complete');
     } catch (e) {
