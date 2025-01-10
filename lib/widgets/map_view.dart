@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart' as geo;
-import 'package:coffee_app/widgets/cafe_grid.dart';
 import '../services/map_service.dart';
 import '../services/foursquare_service.dart';
 import '../models/cafe.dart';
@@ -200,7 +198,7 @@ Cafe Details:
       try {
         final center =
             await mapboxMap.getCameraState().then((state) => state.center);
-        if (center != null && center != _lastCenter) {
+        if (center != _lastCenter) {
           // Debounce updates to once per second
           final now = DateTime.now();
           if (now.difference(lastUpdate) < const Duration(seconds: 1)) return;
@@ -308,35 +306,39 @@ Cafe Details:
   @override
   Widget build(BuildContext context) {
     if (!_isInitialLocationSet || _initialCameraPosition == null) {
-      return Center(
+      return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CupertinoActivityIndicator(radius: 15),
-            const SizedBox(height: 16),
-            const Text('Getting your location...'),
+            CupertinoActivityIndicator(radius: 15),
+            SizedBox(height: 16),
+            Text('Getting your location...'),
           ],
         ),
       );
     }
 
-    return Stack(
-      children: [
-        MapWidget(
-          key: const ValueKey("mapWidget"),
-          onMapCreated: _onMapCreated,
-          cameraOptions: _initialCameraPosition!,
-          styleUri: _mapService.getMapStyle(Theme.of(context).brightness),
-          textureView: true,
-        ),
-        if (!_isCameraCentered)
-          Container(
-            color: Colors.black45,
-            child: const Center(
-              child: CupertinoActivityIndicator(radius: 15),
+    return SizedBox.expand(
+      child: Stack(
+        children: [
+          SizedBox.expand(
+            child: MapWidget(
+              key: const ValueKey("mapWidget"),
+              onMapCreated: _onMapCreated,
+              cameraOptions: _initialCameraPosition!,
+              styleUri: _mapService.getMapStyle(Theme.of(context).brightness),
+              textureView: true,
             ),
           ),
-      ],
+          if (!_isCameraCentered)
+            Container(
+              color: Colors.black45,
+              child: const Center(
+                child: CupertinoActivityIndicator(radius: 15),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
