@@ -1,5 +1,6 @@
 import 'package:coffee_app/widgets/custom_modal.dart';
 import 'package:coffee_app/widgets/map_view.dart';
+import 'package:coffee_app/models/cafe.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,6 +14,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isShowingBookmarks = false;
   final _modalKey = GlobalKey<CustomModalState>();
+  List<Cafe> _visibleCafes = [];
+
+  void _handleCafeTap(Cafe cafe) {
+    // Handle cafe tap if needed
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,14 +32,20 @@ class _HomeScreenState extends State<HomeScreen> {
               _modalKey.currentState?.shrinkModal();
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: MapView(),
+            child: MapView(
+              onCafesLoaded: (cafes) {
+                setState(() {
+                  _visibleCafes = cafes;
+                });
+              },
+            ),
           ),
           // Persistent bottom sheet
           CustomModal(
             key: _modalKey,
             initialShowBookmarks: isShowingBookmarks,
-            visibleCafes: const [],
-            onCafeTap: (cafe) {},
+            visibleCafes: _visibleCafes,
+            onCafeTap: _handleCafeTap,
           ),
           // Heart icon button
           Positioned(

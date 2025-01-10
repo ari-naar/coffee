@@ -11,7 +11,12 @@ import '../services/foursquare_service.dart';
 import '../models/cafe.dart';
 
 class MapView extends StatefulWidget {
-  const MapView({super.key});
+  final Function(List<Cafe>)? onCafesLoaded;
+
+  const MapView({
+    super.key,
+    this.onCafesLoaded,
+  });
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -59,6 +64,20 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
   }
 
   void _showCafeDetails(Cafe cafe) {
+    // Print detailed cafe data when tapped
+    print('''
+\n=== Tapped Cafe Details ===
+Name: ${cafe.name}
+Address: ${cafe.address}
+Distance: ${cafe.distance}m
+Rating: ${cafe.rating}
+Latitude: ${cafe.latitude}
+Longitude: ${cafe.longitude}
+ID: ${cafe.id}
+Photo URL: ${cafe.photoUrl}
+Is Open: ${cafe.isOpen}
+=========================''');
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -99,6 +118,27 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
           _nearbyCafes =
               cafeData.map((data) => Cafe.fromFoursquare(data)).toList();
         });
+
+        // Notify parent about loaded cafes
+        widget.onCafesLoaded?.call(_nearbyCafes);
+
+        // Print all cafe data when loaded
+        print('\n=== Nearby Cafes Loaded ===');
+        for (var cafe in _nearbyCafes) {
+          print('''
+Cafe Details:
+  Name: ${cafe.name}
+  Address: ${cafe.address}
+  Distance: ${cafe.distance}m
+  Rating: ${cafe.rating}
+  Latitude: ${cafe.latitude}
+  Longitude: ${cafe.longitude}
+  ID: ${cafe.id}
+  Photo URL: ${cafe.photoUrl}
+  Is Open: ${cafe.isOpen}
+  -------------------''');
+        }
+
         if (_mapboxMap != null) {
           await _mapService.addCafeMarkers(
             _mapboxMap!,
