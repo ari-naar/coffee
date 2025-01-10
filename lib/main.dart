@@ -14,7 +14,7 @@ void main() async {
   await dotenv.load(fileName: '.env');
 
   // Initialize Firebase
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
 
   runApp(const CoffeeTrackApp());
 }
