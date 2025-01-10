@@ -26,18 +26,27 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.green.shade100,
       body: Stack(
         children: [
-          // Centered "map" text with tap handler
-          GestureDetector(
-            onTap: () {
-              _modalKey.currentState?.shrinkModal();
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
+          // Map layer
+          Positioned.fill(
             child: MapView(
               onCafesLoaded: (cafes) {
                 setState(() {
                   _visibleCafes = cafes;
                 });
               },
+            ),
+          ),
+          // Gesture detector for tap handling
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTapDown: (_) {
+                _modalKey.currentState?.shrinkModal();
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              child: Container(
+                color: Colors.transparent,
+              ),
             ),
           ),
           // Persistent bottom sheet
