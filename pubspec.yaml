@@ -34,8 +34,8 @@ dependencies:
   # Firebase
   firebase_core: ^2.24.2
   firebase_auth: ^4.15.3
-  cloud_firestore: ^4.13.6
-  firebase_storage: ^11.5.6
+  # cloud_firestore: ^4.13.6
+  # firebase_storage: ^11.5.6
 
   # Core
   http: ^1.1.0
@@ -59,9 +59,9 @@ dependencies:
   geocoding: ^3.0.0
 
   # Image Handling
-  image_picker: ^1.0.5
-  photo_view: ^0.15.0
-  image_cropper: ^8.1.0
+  # image_picker: ^1.0.5
+  # photo_view: ^0.15.0
+  # image_cropper: ^8.1.0
 
   # Utils
   json_annotation: ^4.8.1
