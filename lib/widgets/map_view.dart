@@ -38,6 +38,7 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    MapboxOptions.setAccessToken(_mapService.mapboxAccessToken);
     _initializeCamera();
   }
 
